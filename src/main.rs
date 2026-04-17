@@ -59,9 +59,9 @@ async fn main() -> anyhow::Result<()> {
         })
         .collect();
 
-    let tasks_file = fs::read_to_string("./tasks.toml")
+    let tasks_file = fs::read_to_string("./Tasks.toml")
         .await
-        .context("no tasks.toml found")?;
+        .context("no Tasks.toml found")?;
     let config: Config = toml::from_str(&tasks_file)?;
 
     if let Some(env) = config.env {
