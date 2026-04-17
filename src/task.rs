@@ -35,7 +35,7 @@ impl Task {
         let mut tag = name.bold().color(color).to_string();
         tag.push_str(&" ".repeat(tag_padding + 2));
         tag.push_str(&"|".bold().color(color).to_string());
-        tag.push_str(" ");
+        tag.push(' ');
 
         if let TaskTypeOptions::Shell(ShellTaskOptions { command }) = &opts.task_options {
             if command.is_empty() {
@@ -202,8 +202,8 @@ async fn exec(mut cmd: Command, tag: &str, pb: Option<ProgressBar>) -> io::Resul
         tokio::spawn(async move {
             while let Some(line) = stdout_reader.next_line().await.unwrap() {
                 if !line.trim().is_empty() {
-                    let parts = line.split('\r');
-                    let line = parts.last().unwrap_or(&line);
+                    let mut parts = line.split('\r');
+                    let line = parts.next_back().unwrap_or(&line);
                     if let Some(pb) = &pb {
                         pb.set_message(line.to_string());
                     } else {
@@ -221,8 +221,8 @@ async fn exec(mut cmd: Command, tag: &str, pb: Option<ProgressBar>) -> io::Resul
             let mut last_ten_lines = Vec::with_capacity(20);
             while let Some(line) = stderr_reader.next_line().await.unwrap() {
                 if !line.trim().is_empty() {
-                    let parts = line.split('\r');
-                    let line = parts.last().unwrap_or(&line);
+                    let mut parts = line.split('\r');
+                    let line = parts.next_back().unwrap_or(&line);
                     if let Some(pb) = &pb {
                         pb.set_message(line.to_string());
                     } else {
@@ -243,7 +243,7 @@ async fn exec(mut cmd: Command, tag: &str, pb: Option<ProgressBar>) -> io::Resul
         .await
         .expect("child process encountered an error");
 
-    let _ = stdout_task.await.unwrap();
+    stdout_task.await.unwrap();
     let last_ten_lines = stderr_task.await.unwrap();
 
     if !status.success() {

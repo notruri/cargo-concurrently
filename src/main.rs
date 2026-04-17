@@ -82,9 +82,7 @@ async fn main() -> anyhow::Result<()> {
             if selected_tasks.is_empty() {
                 true
             } else {
-                selected_tasks
-                    .iter()
-                    .any(|selected_task| *selected_task == task.0)
+                selected_tasks.contains(&task.0)
             }
         })
         .collect();

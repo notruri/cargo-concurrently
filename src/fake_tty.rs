@@ -1,5 +1,5 @@
 #![allow(
-    clippy::empty_enum,
+    clippy::empty_enums,
     clippy::let_underscore_untyped,
     clippy::needless_pass_by_value,
     clippy::uninlined_format_args
