@@ -1,16 +1,16 @@
 [package]
-name = "concurrently"
-version = "0.3.3"
-authors = ["Ari Seyhun <ariseyhun@live.com.au>"]
+name = "cargo-concurrently"
+version = "0.4.0"
+authors = ["Ruri <hello@ruri.one>", "Ari Seyhun <ariseyhun@live.com.au>"]
 edition = "2021"
 description = "Run multiple processes concurrently."
 license = "MIT OR Apache-2.0"
-repository = "https://github.com/tqwewe/concurrently"
+repository = "https://github.com/notruri/cargo-concurrently"
 categories = ["command-line-utilities"]
 keywords = ["tasks", "concurrently", "cli", "parallel"]
 
 [[bin]]
-name = "concurrently"
+name = "cargo-concurrently"
 path = "src/main.rs"
 
 [dependencies]
