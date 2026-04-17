@@ -2,17 +2,15 @@
 
 Run multiple processes concurrently, with support for cargo.
 
-_Written in Rust with ☕_
-
 ## Install with Cargo
 
 ```bash
-$ cargo install concurrently
+cargo install cargo-concurrently
 ```
 
 ## Getting Started
 
-Create a `tasks.toml` file in the root of your project:
+Create a `Tasks.toml` file in the root of your project:
 
 ```toml
 [tasks.client]
@@ -35,7 +33,7 @@ command = [
 Now you can simply run concurrently:
 
 ```bash
-$ cargo concurrently
+cargo concurrently
 ```
 
 ## Config
