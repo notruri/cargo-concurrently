@@ -1,10 +1,10 @@
-use std::{process, sync::Arc, time::Duration};
+use std::{path::Path, process, sync::Arc, time::Duration};
 
 use anyhow::Context;
 use clap::Parser;
 use colored::Color;
 use config::Config;
-use futures::{stream::FuturesUnordered, FutureExt, StreamExt};
+use futures::{FutureExt, StreamExt, stream::FuturesUnordered};
 use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
 use log::{error, info};
 use tokio::{fs, io, signal, time};
@@ -38,6 +38,32 @@ struct Args {
     tasks: Vec<String>,
 }
 
+fn selected_tasks(tasks: Vec<String>) -> Vec<String> {
+    let bin_name = option_env!("CARGO_BIN_NAME").unwrap_or(env!("CARGO_PKG_NAME"));
+    let strip_subcommand = std::env::args_os()
+        .next()
+        .and_then(|arg0| Path::new(&arg0).file_stem().map(|stem| stem == bin_name))
+        .unwrap_or(false);
+
+    tasks
+        .into_iter()
+        .enumerate()
+        .filter_map(|(index, task)| {
+            if strip_subcommand && index == 0 && task == "concurrently" {
+                None
+            } else {
+                Some(task)
+            }
+        })
+        .flat_map(|member_string| {
+            member_string
+                .split(',')
+                .map(ToString::to_string)
+                .collect::<Vec<_>>()
+        })
+        .collect()
+}
+
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let is_fake_tty = std::env::args().any(|arg| arg == "--fake-tty");
@@ -48,16 +74,7 @@ async fn main() -> anyhow::Result<()> {
 
     let args = Args::parse();
 
-    let selected_tasks: Vec<_> = args
-        .tasks
-        .into_iter()
-        .flat_map(|member_string| {
-            member_string
-                .split(',')
-                .map(ToString::to_string)
-                .collect::<Vec<_>>()
-        })
-        .collect();
+    let selected_tasks = selected_tasks(args.tasks);
 
     let tasks_file = fs::read_to_string("./Tasks.toml")
         .await
